@@ -4,6 +4,7 @@
 ![Tech](https://img.shields.io/badge/Stack-LocalStack_|_Terraform_|_Kubernetes_|_Django-blue)
 
 ## Architecture
+
 graph TD
     subgraph "Local Laptop (Host Machine)"
         user[User / Browser] -->|HTTP :8080| tunnel[Kubectl Port-Forward]
