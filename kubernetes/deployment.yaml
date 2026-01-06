@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: wallet-deployment
 spec:
-  replicas: 2  # Simulating High Availability
+  replicas: 1  # Simulating High Availability
   selector:
     matchLabels:
       app: wallet
@@ -12,6 +12,8 @@ spec:
       labels:
         app: wallet
     spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: django
           image: safari-wallet:v1
@@ -35,7 +37,7 @@ spec:
             # This is the "VPN" target. We point to the IP of the legacy container.
             # We will find this IP in the next step.
             - name: MAINFRAME_ENDPOINT
-              value: "192.168.1.2"
+              value: "http://192.168.1.2:8000/api/balance"
 
 ---
 apiVersion: v1
