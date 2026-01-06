@@ -1,0 +1,39 @@
+# --- LocalStack & Docker ---
+# The volume folder defined in docker-compose.yml
+# It contains raw data from the container (database, K3s state)
+# If you push this, you repo will be hundreds of MBs huge.
+volume/
+.tmp/
+
+# --- Terraform ---
+# Plugin and provider binaries (heavy)
+.terraform/
+
+# State files. NEVER commit these.
+# They contain the current state of your infrastructure and often secrets
+# Since we are local, they also contain absolute paths from your machine.
+*.tfstate
+*.tfstate.backup
+
+# Crash logs if Terraform explodes
+crash.log
+
+# --- Python (for the future Django/Flask apps) ---
+# Compliled bytecode
+__pycache__/
+*.pyc
+
+# Virtual Environments
+env/
+.venv/
+venv/
+
+# --- IDE & OS ---
+.DS_Store
+.vscode/
+.idea/
+
+# --- Security ---
+# Even though we use "test" credentials, it's good practice
+# to ingore env files to show you know security protocols.
+.env
