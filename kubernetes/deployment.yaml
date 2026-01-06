@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallet-deployment
+spec:
+  replicas: 2  # Simulating High Availability
+  selector:
+    matchLabels:
+      app: wallet
+  template:
+    metadata:
+      labels:
+        app: wallet
+    spec:
+      containers:
+        - name: django
+          image: safari-wallet:v1
+          imagePullPolicy: Never  # CRITICAL: Tells K8s to use the local image we just built
+          ports:
+            - containerPort: 8000
+          env:
+            # We inject the DB Host here. 
+            # In a real setup, we'd use a Secret, but for this PoC, we paste the Terraform Output or rely on internal DNS.
+            # LocalStack RDS DNS often resolves to the container IP internally.
+            - name: DB_HOST
+              value: "172.21.0.4"
+            - name: DB_PORT
+              value: "4510"
+            - name: DB_NAME
+              value: "walletdb"
+            - name: DB_USER
+              value: "admin_user"
+            - name: DB_PASSWORD
+              value: "SuperSecurePass123!"
+            # This is the "VPN" target. We point to the IP of the legacy container.
+            # We will find this IP in the next step.
+            - name: MAINFRAME_ENDPOINT
+              value: "192.168.1.2"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: wallet
+  ports:
+    - port: 80
+      targetPort: 8000
