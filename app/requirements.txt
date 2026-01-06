@@ -1,0 +1,4 @@
+Django>=4.2,<5.0
+psycopg2-binary>=2.9  # The adapter to talk to Postgres (RDS)
+requests>=2.31        # To talk to the Legacy Mainframe API
+gunicorn>=21.2        # Production HTTP Server (Don't use 'manage.py runserver' in k8s!)
