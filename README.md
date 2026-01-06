@@ -2,37 +2,7 @@
 
 ![Status](https://img.shields.io/badge/Status-Complete-success)
 ![Tech](https://img.shields.io/badge/Stack-LocalStack_|_Terraform_|_Kubernetes_|_Django-blue)
-
-## Architecture
-
-graph TD
-    subgraph "Local Laptop (Host Machine)"
-        user[User / Browser] -->|HTTP :8080| tunnel[Kubectl Port-Forward]
-        
-        subgraph "LocalStack (Docker Container)"
-            tunnel -->|Forward to :8000| k8s_service[K8s Service]
-            
-            subgraph "Kubernetes Cluster (EKS/K3s)"
-                k8s_service --> pod[Django Wallet Pod]
-                pod -->|Env Vars| rds_config[DB Config]
-            end
-            
-            subgraph "AWS Cloud Resources"
-                rds[(RDS Postgres DB)] 
-                pod -->|SQL :4510| rds
-            end
-        end
-
-        subgraph "Legacy Data Center (Docker Container)"
-            mainframe[Python Mainframe API]
-            pod -.->|HTTP :8000 (VPN Bridge)| mainframe
-        end
-    end
-
-    classDef legacy fill:#f9f,stroke:#333,stroke-width:2px;
-    class mainframe legacy;
-    classDef cloud fill:#bae1ff,stroke:#333,stroke-width:2px;
-    class pod,rds cloud;
+![Architecture]()
 
 ## 📖 Overview
 
