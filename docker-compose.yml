@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  # --- The "Cloud" (AWS Region) ---
+  localstack:
+    container_name: localstack_pro
+    image: localstack/localstack-pro:latest  # Must be Pro/Student for EKS
+    ports:
+      - "4566:4566"            # LocalStack Gateway
+      - "4510-4559:4510-4559"  # External services range
+      - "8081:8081"            # EKS LoadBalancer Ingress (HTTP access to cluster)
+    environment:
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN} # Loads from your shell environment
+      - SERVICES=eks,rds,ec2,iam,sts,cloudformation,route53,cloudwatch
+      - DEBUG=1
+      - EKS_LOADBALANCER_PORT=8081
+      - PERSISTENCE=1          # Saves state if you restart
+      - MAIN_CONTAINER_NAME=localstack_pro
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - "./volume:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - cloud-net
+      - hybrid-link   # This is our "Interface" to the VPN
+
+  # --- The "On-Premise" Data Center ---
+  legacy-mainframe:
+    image: python:3.9-slim
+    container_name: legacy_mainframe
+    # We simulate a legacy banking API
+    command: >
+      sh -c "echo 'from flask import Flask, jsonify
+      app = Flask(__name__)
+      @app.route(\"/api/balance\")
+      def bal(): return jsonify({\"account\": \"123\", \"balance\": 50000, \"currency\": \"KES\"})
+      if __name__ == \"__main__\": app.run(host=\"0.0.0.0\", port=8000)' > app.py && 
+      pip install flask && python app.py"
+    ports:
+      - "8000:8000" # Exposed to host for debugging, but we will try to access via VPN
+    networks:
+      - on-prem-net   # NOTE: It is NOT connected to cloud-net!
+
+# --- Network Definition ---
+networks:
+  cloud-net:
+    driver: bridge
+    name: safari-cloud-vpc
+  
+  on-prem-net:
+    driver: bridge
+    name: safari-datacenter
+    ipam:
+      config:
+        - subnet: 192.168.1.0/24  # Strict subnetting for realism
+
+  hybrid-link:
+    driver: bridge
+    name: safari-vpn-link
