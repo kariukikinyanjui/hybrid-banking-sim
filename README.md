@@ -2,7 +2,6 @@
 
 ![Status](https://img.shields.io/badge/Status-Complete-success)
 ![Tech](https://img.shields.io/badge/Stack-LocalStack_|_Terraform_|_Kubernetes_|_Django-blue)
-![Architecture]()
 
 ## 📖 Overview
 
@@ -15,6 +14,8 @@ I built this project to demonstrate advanced infrastructure skills—specificall
 ## 🏗 Architecture
 
 The system mimics a "Split-Horizon" network architecture where the Cloud and the Data Center are network-isolated by default.
+
+![Architecture](https://github.com/kariukikinyanjui/hybrid-banking-sim/blob/main/docs/images/architecture-diagram.png)
 
 
 
